@@ -17,8 +17,10 @@ class AuthChoiceActivity : AppCompatActivity() {
         val btnSignIn = findViewById<Button>(R.id.btnSignIn)
         val btnSignUp = findViewById<Button>(R.id.btnSignUp)
 
+        // переход на экран входа
         btnSignIn.setOnClickListener {
-            Toast.makeText(this, "Переход на экран входа", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, SignInActivity::class.java)
+            startActivity(intent)
         }
 
         btnSignUp.setOnClickListener {

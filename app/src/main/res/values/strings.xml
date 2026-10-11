@@ -29,4 +29,18 @@
     <string name="auth_choice_slogan">Поможем найти твою следующую поездку</string>
     <string name="btn_sign_in">Войти</string>
     <string name="btn_sign_up">Зарегистрироваться</string>
+
+    <!-- экран вход в аккаунт -->
+    <string name="sign_in_title">Войдите в аккаунт</string>
+    <string name="sign_in_subtitle">Пожалуйста, введите свои данные</string>
+    <string name="label_email">Электронная почта</string>
+    <string name="hint_email">Введите электронную почту</string>
+    <string name="label_password">Пароль</string>
+    <string name="hint_password">Введите пароль</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="btn_google_sign_in">Войти через Google</string>
+    <string name="link_to_sign_up">Зарегистрироваться</string>
+    <string name="error_invalid_email">Введите корректный адрес электронной почты.</string>
+    <string name="error_empty_password">Пароль не может быть пустым.</string>
+    <string name="error_auth_failed">Неверный адрес почты или пароль.</string>
 </resources>
