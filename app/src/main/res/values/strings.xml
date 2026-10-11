@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">DriveNext</string>
+    <string name="splash_slogan">Поможем найти твою следующую поездку</string>
+    <string name="cd_splash_logo">Логотип DriveNext</string>
+
+    <!-- строки онбординга -->
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_next">Далее</string>
+    <string name="onboarding_start">Начать</string>
+
+    <!-- слайд 1 -->
+    <string name="onboarding_title_1">Быстрое бронирование</string>
+    <string name="onboarding_desc_1">Найдите и забронируйте автомобиль за пару кликов в любой точке города.</string>
+
+    <!-- слайд 2 -->
+    <string name="onboarding_title_2">Большой автопарк</string>
+    <string name="onboarding_desc_2">От компактных городских авто до комфортных премиальных седанов.</string>
+
+    <!-- слайд 3 -->
+    <string name="onboarding_title_3">Выгодные тарифы</string>
+    <string name="onboarding_desc_3">Поминутная, часовая и посуточная аренда без скрытых платежей.</string>
+
+    <!-- экран отсутствия интернета -->
+    <string name="no_internet_title">Нет подключения к сети</string>
+    <string name="no_internet_desc">Проверьте подключение к Wi-Fi или мобильному интернету и попробуйте снова.</string>
+    <string name="no_internet_retry">Повторить попытку</string>
+
+    <!-- экран выбора входа/регистрации -->
+    <string name="auth_choice_slogan">Поможем найти твою следующую поездку</string>
+    <string name="btn_sign_in">Войти</string>
+    <string name="btn_sign_up">Зарегистрироваться</string>
 </resources>
