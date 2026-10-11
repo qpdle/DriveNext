@@ -24,7 +24,8 @@ class AuthChoiceActivity : AppCompatActivity() {
         }
 
         btnSignUp.setOnClickListener {
-            Toast.makeText(this, "Переход на экран регистрации", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, SignUpStep1Activity::class.java)
+            startActivity(intent)
         }
     }
 }

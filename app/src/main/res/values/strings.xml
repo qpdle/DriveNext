@@ -43,4 +43,14 @@
     <string name="error_invalid_email">Введите корректный адрес электронной почты.</string>
     <string name="error_empty_password">Пароль не может быть пустым.</string>
     <string name="error_auth_failed">Неверный адрес почты или пароль.</string>
+
+    <!-- экран регистрации -->
+    <string name="sign_up_title">Создать аккаунт</string>
+    <string name="label_create_password">Придумайте пароль</string>
+    <string name="label_repeat_password">Повторите пароль</string>
+    <string name="hint_repeat_password">Введите пароль</string>
+    <string name="checkbox_terms">Я согласен с условиями обслуживания и политикой конфиденциальности</string>
+    <string name="btn_next">Далее</string>
+    <string name="error_passwords_mismatch">Пароли не совпадают.</string>
+    <string name="error_terms_required">Необходимо согласиться с условиями обслуживания и политикой конфиденциальности.</string>
 </resources>

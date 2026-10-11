@@ -106,7 +106,8 @@ class SignInActivity : AppCompatActivity() {
 
         // переход на регистрацию
         tvGoToSignUp.setOnClickListener {
-            Toast.makeText(this, "Переход на регистрацию", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, SignUpStep1Activity::class.java)
+            startActivity(intent)
         }
     }
 
