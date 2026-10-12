@@ -36,6 +36,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".SignUpStep2Activity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">

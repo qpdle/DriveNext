@@ -53,4 +53,19 @@
     <string name="btn_next">Далее</string>
     <string name="error_passwords_mismatch">Пароли не совпадают.</string>
     <string name="error_terms_required">Необходимо согласиться с условиями обслуживания и политикой конфиденциальности.</string>
+
+    <!-- 2 экран Регистрации -->
+    <string name="label_last_name">Фамилия</string>
+    <string name="hint_last_name">Введите фамилию</string>
+    <string name="label_first_name">Имя</string>
+    <string name="hint_first_name">Введите имя</string>
+    <string name="label_patronymic">Отчество</string>
+    <string name="hint_patronymic">Введите отчество</string>
+    <string name="label_birth_date">Дата рождения</string>
+    <string name="hint_birth_date">DD/MM/YYYY</string>
+    <string name="label_gender">Пол</string>
+    <string name="gender_male">Мужской</string>
+    <string name="gender_female">Женский</string>
+    <string name="error_fill_required_fields">Пожалуйста, заполните все обязательные поля.</string>
+    <string name="error_invalid_birth_date">Введите корректную дату рождения.</string>
 </resources>

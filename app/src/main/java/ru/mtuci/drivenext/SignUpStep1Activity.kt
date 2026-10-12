@@ -111,12 +111,12 @@ class SignUpStep1Activity : AppCompatActivity() {
 
             // успешная валидация: передаем введенные данные дальше
             Toast.makeText(this, "Шаг 1 пройден", Toast.LENGTH_SHORT).show()
-            // На следующем шаге здесь вызовем SignUpStep2Activity:
-            // val intent = Intent(this, SignUpStep2Activity::class.java).apply {
-            //     putExtra("extra_email", email)
-            //     putExtra("extra_password", password)
-            // }
-            // startActivity(intent)
+            // успешная валидация: открываем шаг 2 и передаем email и пароль
+            val intent = Intent(this, SignUpStep2Activity::class.java).apply {
+                putExtra("extra_email", email)
+                putExtra("extra_password", password)
+            }
+            startActivity(intent)
         }
     }
 }
