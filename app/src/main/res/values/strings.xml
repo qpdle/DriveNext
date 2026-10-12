@@ -81,4 +81,10 @@
     <string name="error_license_length">Номер ВУ должен содержать ровно 10 символов.</string>
     <string name="error_invalid_issue_date">Введите корректную дату выдачи.</string>
     <string name="error_missing_photos">Пожалуйста, загрузите все необходимые фото.</string>
+
+    <!-- экран успешной регистрации -->
+    <string name="success_title">Поздравляем!</string>
+    <string name="success_subtitle">Вы успешно создали аккаунт</string>
+    <string name="success_description">Теперь вы можете начать пользоваться всеми возможностями нашего сервиса аренды авто.</string>
+    <string name="btn_go_to_main">Перейти на главный экран</string>
 </resources>

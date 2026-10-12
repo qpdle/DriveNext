@@ -1,5 +1,6 @@
 package ru.mtuci.drivenext
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -206,7 +207,9 @@ class SignUpStep3Activity : AppCompatActivity() {
             }
 
             Toast.makeText(this, "Шаг 3 пройден! Все документы загружены", Toast.LENGTH_SHORT).show()
-
+            // переход на экран поздравления
+            val intent = Intent(this, SignUpSuccessActivity::class.java)
+            startActivity(intent)
         }
     }
 }
