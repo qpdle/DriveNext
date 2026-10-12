@@ -68,4 +68,17 @@
     <string name="gender_female">Женский</string>
     <string name="error_fill_required_fields">Пожалуйста, заполните все обязательные поля.</string>
     <string name="error_invalid_birth_date">Введите корректную дату рождения.</string>
+
+    <!-- 3 экран регистрации -->
+    <string name="avatar_description_hint">Добавление фотографии поможет владельцам и арендаторам узнать друг друга, когда они будут забирать машину</string>
+    <string name="label_driver_license">Номер водительского удостоверения</string>
+    <string name="hint_driver_license">0000000000</string>
+    <string name="label_issue_date">Дата выдачи</string>
+    <string name="label_upload_license">Загрузите фото водительского удостоверения</string>
+    <string name="label_upload_passport">Загрузите фото паспорта</string>
+    <string name="btn_upload_photo">Загрузить фото</string>
+    <string name="photo_uploaded">Фото загружено ✓</string>
+    <string name="error_license_length">Номер ВУ должен содержать ровно 10 символов.</string>
+    <string name="error_invalid_issue_date">Введите корректную дату выдачи.</string>
+    <string name="error_missing_photos">Пожалуйста, загрузите все необходимые фото.</string>
 </resources>

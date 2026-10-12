@@ -1,5 +1,6 @@
 package ru.mtuci.drivenext
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -136,7 +137,17 @@ class SignUpStep2Activity : AppCompatActivity() {
             }
 
             Toast.makeText(this, "Шаг 2 пройден", Toast.LENGTH_SHORT).show()
-
+            // Открываем Шаг 3 и передаем все накопленные данные
+            val intent = Intent(this, SignUpStep3Activity::class.java).apply {
+                putExtra("extra_email", emailArg)
+                putExtra("extra_password", passwordArg)
+                putExtra("extra_last_name", lastName)
+                putExtra("extra_first_name", firstName)
+                putExtra("extra_patronymic", patronymic)
+                putExtra("extra_birth_date", birthDate)
+                putExtra("extra_gender", gender)
+            }
+            startActivity(intent)
         }
     }
 }
