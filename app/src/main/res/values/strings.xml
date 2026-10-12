@@ -1,3 +1,90 @@
 <resources>
     <string name="app_name">DriveNext</string>
+    <string name="splash_slogan">Поможем найти твою следующую поездку</string>
+    <string name="cd_splash_logo">Логотип DriveNext</string>
+
+    <!-- строки онбординга -->
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_next">Далее</string>
+    <string name="onboarding_start">Начать</string>
+
+    <!-- слайд 1 -->
+    <string name="onboarding_title_1">Быстрое бронирование</string>
+    <string name="onboarding_desc_1">Найдите и забронируйте автомобиль за пару кликов в любой точке города.</string>
+
+    <!-- слайд 2 -->
+    <string name="onboarding_title_2">Большой автопарк</string>
+    <string name="onboarding_desc_2">От компактных городских авто до комфортных премиальных седанов.</string>
+
+    <!-- слайд 3 -->
+    <string name="onboarding_title_3">Выгодные тарифы</string>
+    <string name="onboarding_desc_3">Поминутная, часовая и посуточная аренда без скрытых платежей.</string>
+
+    <!-- экран отсутствия интернета -->
+    <string name="no_internet_title">Нет подключения к сети</string>
+    <string name="no_internet_desc">Проверьте подключение к Wi-Fi или мобильному интернету и попробуйте снова.</string>
+    <string name="no_internet_retry">Повторить попытку</string>
+
+    <!-- экран выбора входа/регистрации -->
+    <string name="auth_choice_slogan">Поможем найти твою следующую поездку</string>
+    <string name="btn_sign_in">Войти</string>
+    <string name="btn_sign_up">Зарегистрироваться</string>
+
+    <!-- экран вход в аккаунт -->
+    <string name="sign_in_title">Войдите в аккаунт</string>
+    <string name="sign_in_subtitle">Пожалуйста, введите свои данные</string>
+    <string name="label_email">Электронная почта</string>
+    <string name="hint_email">Введите электронную почту</string>
+    <string name="label_password">Пароль</string>
+    <string name="hint_password">Введите пароль</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="btn_google_sign_in">Войти через Google</string>
+    <string name="link_to_sign_up">Зарегистрироваться</string>
+    <string name="error_invalid_email">Введите корректный адрес электронной почты.</string>
+    <string name="error_empty_password">Пароль не может быть пустым.</string>
+    <string name="error_auth_failed">Неверный адрес почты или пароль.</string>
+
+    <!-- экран регистрации -->
+    <string name="sign_up_title">Создать аккаунт</string>
+    <string name="label_create_password">Придумайте пароль</string>
+    <string name="label_repeat_password">Повторите пароль</string>
+    <string name="hint_repeat_password">Введите пароль</string>
+    <string name="checkbox_terms">Я согласен с условиями обслуживания и политикой конфиденциальности</string>
+    <string name="btn_next">Далее</string>
+    <string name="error_passwords_mismatch">Пароли не совпадают.</string>
+    <string name="error_terms_required">Необходимо согласиться с условиями обслуживания и политикой конфиденциальности.</string>
+
+    <!-- 2 экран Регистрации -->
+    <string name="label_last_name">Фамилия</string>
+    <string name="hint_last_name">Введите фамилию</string>
+    <string name="label_first_name">Имя</string>
+    <string name="hint_first_name">Введите имя</string>
+    <string name="label_patronymic">Отчество</string>
+    <string name="hint_patronymic">Введите отчество</string>
+    <string name="label_birth_date">Дата рождения</string>
+    <string name="hint_birth_date">DD/MM/YYYY</string>
+    <string name="label_gender">Пол</string>
+    <string name="gender_male">Мужской</string>
+    <string name="gender_female">Женский</string>
+    <string name="error_fill_required_fields">Пожалуйста, заполните все обязательные поля.</string>
+    <string name="error_invalid_birth_date">Введите корректную дату рождения.</string>
+
+    <!-- 3 экран регистрации -->
+    <string name="avatar_description_hint">Добавление фотографии поможет владельцам и арендаторам узнать друг друга, когда они будут забирать машину</string>
+    <string name="label_driver_license">Номер водительского удостоверения</string>
+    <string name="hint_driver_license">0000000000</string>
+    <string name="label_issue_date">Дата выдачи</string>
+    <string name="label_upload_license">Загрузите фото водительского удостоверения</string>
+    <string name="label_upload_passport">Загрузите фото паспорта</string>
+    <string name="btn_upload_photo">Загрузить фото</string>
+    <string name="photo_uploaded">Фото загружено ✓</string>
+    <string name="error_license_length">Номер ВУ должен содержать ровно 10 символов.</string>
+    <string name="error_invalid_issue_date">Введите корректную дату выдачи.</string>
+    <string name="error_missing_photos">Пожалуйста, загрузите все необходимые фото.</string>
+
+    <!-- экран успешной регистрации -->
+    <string name="success_title">Поздравляем!</string>
+    <string name="success_subtitle">Вы успешно создали аккаунт</string>
+    <string name="success_description">Теперь вы можете начать пользоваться всеми возможностями нашего сервиса аренды авто.</string>
+    <string name="btn_go_to_main">Перейти на главный экран</string>
 </resources>
