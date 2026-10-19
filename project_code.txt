@@ -1,0 +1,2844 @@
+﻿
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\AndroidManifest.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.DriveNext"
+        tools:targetApi="31">
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AuthChoiceActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".NoInternetActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignInActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpStep1Activity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpStep2Activity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpStep3Activity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpSuccessActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\AuthChoiceActivity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class AuthChoiceActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // СѓСЃС‚Р°РЅРѕРІРєР° С‚РµРјС‹ РїСЂРёР»РѕР¶РµРЅРёСЏ
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_auth_choice)
+
+        val btnSignIn = findViewById<Button>(R.id.btnSignIn)
+        val btnSignUp = findViewById<Button>(R.id.btnSignUp)
+
+        // РїРµСЂРµС…РѕРґ РЅР° СЌРєСЂР°РЅ РІС…РѕРґР°
+        btnSignIn.setOnClickListener {
+            val intent = Intent(this, SignInActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnSignUp.setOnClickListener {
+            val intent = Intent(this, SignUpStep1Activity::class.java)
+            startActivity(intent)
+        }
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\MainActivity.kt ===
+package ru.mtuci.drivenext
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+
+@SuppressLint("CustomSplashScreen")
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            checkInternetAndProceed()
+        }, 2000)
+    }
+
+    private fun checkInternetAndProceed() {
+        if (!isNetworkAvailable()) {
+            val intent = Intent(this, NoInternetActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            checkLaunchState()
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun checkLaunchState() {
+        val sharedPref = getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        val isOnboardingCompleted = sharedPref.getBoolean("is_onboarding_completed", false)
+
+        if (!isOnboardingCompleted) {
+            // Р•СЃР»Рё РїРµСЂРІС‹Р№ Р·Р°РїСѓСЃРє вЂ” РѕС‚РєСЂС‹РІР°РµРј РѕРЅР±РѕСЂРґРёРЅРі
+            val intent = Intent(this, OnboardingActivity::class.java)
+            startActivity(intent)
+        } else {
+            // Р•СЃР»Рё РѕРЅР±РѕСЂРґРёРЅРі СѓР¶Рµ РїСЂРѕР№РґРµРЅ вЂ” СЃСЂР°Р·Сѓ РѕС‚РєСЂС‹РІР°РµРј РІС‹Р±РѕСЂ РґРµР№СЃС‚РІРёСЏ (Р’С…РѕРґ/Р РµРіРёСЃС‚СЂР°С†РёСЏ)
+            val intent = Intent(this, AuthChoiceActivity::class.java)
+            startActivity(intent)
+        }
+        finish()
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\NoInternetActivity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class NoInternetActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_no_internet)
+
+        val btnRetry: Button = findViewById(R.id.btnRetry)
+
+        btnRetry.setOnClickListener {
+            if (isNetworkAvailable()) {
+                // РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РІ MainActivity РґР»СЏ РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ Р·Р°РїСѓСЃРєР°
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "РЎРµС‚СЊ РІСЃС‘ РµС‰С‘ РЅРµРґРѕСЃС‚СѓРїРЅР°", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\OnboardingActivity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.viewpager2.widget.ViewPager2
+
+class OnboardingActivity : AppCompatActivity() {
+
+    private lateinit var viewPager: ViewPager2
+    private lateinit var btnNext: Button
+    private lateinit var btnSkip: Button
+    private lateinit var layoutIndicators: LinearLayout
+
+    private val onboardingList = listOf(
+        OnboardingItem(
+            R.string.onboarding_title_1,
+            R.string.onboarding_desc_1,
+            R.drawable.ic_splash_logo
+        ),
+        OnboardingItem(
+            R.string.onboarding_title_2,
+            R.string.onboarding_desc_2,
+            R.drawable.ic_splash_logo
+        ),
+        OnboardingItem(
+            R.string.onboarding_title_3,
+            R.string.onboarding_desc_3,
+            R.drawable.ic_splash_logo
+        )
+    )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_onboarding)
+
+        viewPager = findViewById(R.id.viewPager)
+        btnNext = findViewById(R.id.btnNext)
+        btnSkip = findViewById(R.id.btnSkip)
+        layoutIndicators = findViewById(R.id.layoutIndicators)
+
+        val adapter = OnboardingAdapter(onboardingList)
+        viewPager.adapter = adapter
+
+        setupIndicators()
+        setCurrentIndicator(0)
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                setCurrentIndicator(position)
+                if (position == onboardingList.size - 1) {
+                    btnNext.setText(R.string.onboarding_start)
+                } else {
+                    btnNext.setText(R.string.onboarding_next)
+                }
+            }
+        })
+
+        btnNext.setOnClickListener {
+            if (viewPager.currentItem + 1 < onboardingList.size) {
+                viewPager.currentItem += 1
+            } else {
+                finishOnboarding()
+            }
+        }
+
+        btnSkip.setOnClickListener {
+            finishOnboarding()
+        }
+    }
+
+    private fun setupIndicators() {
+        val indicators = arrayOfNulls<ImageView>(onboardingList.size)
+        val layoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        layoutParams.setMargins(8, 0, 8, 0)
+
+        for (i in indicators.indices) {
+            indicators[i] = ImageView(applicationContext)
+            indicators[i]?.setImageDrawable(
+                ContextCompat.getDrawable(applicationContext, R.drawable.indicator_dot_inactive)
+            )
+            indicators[i]?.layoutParams = layoutParams
+            layoutIndicators.addView(indicators[i])
+        }
+    }
+
+    private fun setCurrentIndicator(position: Int) {
+        val childCount = layoutIndicators.childCount
+        for (i in 0 until childCount) {
+            val imageView = layoutIndicators.getChildAt(i) as ImageView
+            if (i == position) {
+                imageView.setImageDrawable(
+                    ContextCompat.getDrawable(applicationContext, R.drawable.indicator_dot_active)
+                )
+            } else {
+                imageView.setImageDrawable(
+                    ContextCompat.getDrawable(applicationContext, R.drawable.indicator_dot_inactive)
+                )
+            }
+        }
+    }
+
+    private fun finishOnboarding() {
+        val sharedPref = getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("is_onboarding_completed", true)
+            apply()
+        }
+
+        // РћС‚РєСЂС‹РІР°РµРј СЌРєСЂР°РЅ РІС‹Р±РѕСЂР° РІС…РѕРґР°/СЂРµРіРёСЃС‚СЂР°С†РёРё
+        val intent = Intent(this, AuthChoiceActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\OnboardingAdapter.kt ===
+package ru.mtuci.drivenext
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+
+class OnboardingAdapter(
+    private val items: List<OnboardingItem>
+) : RecyclerView.Adapter<OnboardingAdapter.OnboardingViewHolder>() {
+
+    inner class OnboardingViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val ivImage: ImageView = view.findViewById(R.id.ivOnboardingImage)
+        private val tvTitle: TextView = view.findViewById(R.id.tvOnboardingTitle)
+        private val tvDesc: TextView = view.findViewById(R.id.tvOnboardingDesc)
+
+        fun bind(item: OnboardingItem) {
+            ivImage.setImageResource(item.imageResId)
+            tvTitle.setText(item.titleResId)
+            tvDesc.setText(item.descriptionResId)
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OnboardingViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_onboarding_page, parent, false)
+        return OnboardingViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: OnboardingViewHolder, position: Int) {
+        holder.bind(items[position])
+    }
+
+    override fun getItemCount(): Int = items.size
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\OnboardingItem.kt ===
+package ru.mtuci.drivenext
+
+data class OnboardingItem(
+    val titleResId: Int,
+    val descriptionResId: Int,
+    val imageResId: Int
+)
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\SignInActivity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.util.regex.Pattern
+
+class SignInActivity : AppCompatActivity() {
+
+    private lateinit var tilEmail: TextInputLayout
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var tilPassword: TextInputLayout
+    private lateinit var etPassword: TextInputEditText
+    private lateinit var btnSignInAction: Button
+    private lateinit var btnGoogleSignIn: AppCompatButton
+    private lateinit var tvGoToSignUp: TextView
+    private lateinit var tvForgotPassword: TextView
+
+    // РїР°С‚С‚РµСЂРЅ РІР°Р»РёРґР°С†РёРё email: name@domainname.com РёР»Рё .ru
+    private val emailPattern: Pattern = Pattern.compile(
+        "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.(com|ru)$",
+        Pattern.CASE_INSENSITIVE
+    )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_sign_in)
+
+        initViews()
+        setupInputWatchers()
+        setupListeners()
+    }
+
+    private fun initViews() {
+        tilEmail = findViewById(R.id.tilEmail)
+        etEmail = findViewById(R.id.etEmail)
+        tilPassword = findViewById(R.id.tilPassword)
+        etPassword = findViewById(R.id.etPassword)
+        btnSignInAction = findViewById(R.id.btnSignInAction)
+        btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn)
+        tvGoToSignUp = findViewById(R.id.tvGoToSignUp)
+        tvForgotPassword = findViewById(R.id.tvForgotPassword)
+    }
+
+    private fun setupInputWatchers() {
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val email = etEmail.text.toString().trim()
+                val password = etPassword.text.toString().trim()
+
+                // РєРЅРѕРїРєР° РІРѕР№С‚Рё Р°РєС‚РёРІРЅР° С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ Р·Р°РїРѕР»РЅРµРЅРёСЏ РІСЃРµС… РїРѕР»РµР№
+                btnSignInAction.isEnabled = email.isNotEmpty() && password.isNotEmpty()
+
+                // СЃР±СЂР°СЃС‹РІР°РµРј РѕС€РёР±РєРё РїСЂРё РЅР°С‡Р°Р»Рµ РЅРѕРІРѕРіРѕ РІРІРѕРґР°
+                tilEmail.error = null
+                tilPassword.error = null
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        etEmail.addTextChangedListener(textWatcher)
+        etPassword.addTextChangedListener(textWatcher)
+    }
+
+    private fun setupListeners() {
+        // РЅР°Р¶Р°С‚РёРµ РЅР° РєРЅРѕРїРєСѓ РІРѕР№С‚Рё
+        btnSignInAction.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+
+            if (!validateEmail(email)) {
+                tilEmail.error = getString(R.string.error_invalid_email)
+                return@setOnClickListener
+            }
+
+            if (password.isEmpty()) {
+                tilPassword.error = getString(R.string.error_empty_password)
+                return@setOnClickListener
+            }
+
+            // РёРјРёС‚Р°С†РёСЏ СѓСЃРїРµС€РЅРѕР№ Р°РІС‚РѕСЂРёР·Р°С†РёРё Рё СЃРѕС…СЂР°РЅРµРЅРёРµ СЃРµСЃСЃРёРё
+            performLoginSuccess(email)
+        }
+
+        // РІС…РѕРґ С‡РµСЂРµР· Google
+        btnGoogleSignIn.setOnClickListener {
+            Toast.makeText(this, "РђРІС‚РѕСЂРёР·Р°С†РёСЏ С‡РµСЂРµР· Google...", Toast.LENGTH_SHORT).show()
+            performLoginSuccess("google_user@drivenext.ru")
+        }
+
+        // Р·Р°Р±С‹Р»Рё РїР°СЂРѕР»СЊ
+        tvForgotPassword.setOnClickListener {
+            Toast.makeText(this, "Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РїР°СЂРѕР»СЏ РІСЂРµРјРµРЅРЅРѕ РЅРµРґРѕСЃС‚СѓРїРЅРѕ", Toast.LENGTH_SHORT).show()
+        }
+
+        // РїРµСЂРµС…РѕРґ РЅР° СЂРµРіРёСЃС‚СЂР°С†РёСЋ
+        tvGoToSignUp.setOnClickListener {
+            val intent = Intent(this, SignUpStep1Activity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun validateEmail(email: String): Boolean {
+        return emailPattern.matcher(email).matches()
+    }
+
+    private fun performLoginSuccess(email: String) {
+        // СЃРѕС…СЂР°РЅРµРЅРёРµ СЃРµСЃСЃРёРё РІ SharedPreferences
+        val sharedPref = getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("is_logged_in", true)
+            putString("user_email", email)
+            apply()
+        }
+
+        Toast.makeText(this, "РЈСЃРїРµС€РЅС‹Р№ РІС…РѕРґ!", Toast.LENGTH_SHORT).show()
+
+        // РїРµСЂРµС…РѕРґ РЅР° СЌРєСЂР°РЅ РїСЂРёР»РѕР¶РµРЅРёСЏ СЃ РѕС‡РёСЃС‚РєРѕР№ СЃС‚РµРєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        finish()
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\SignUpStep1Activity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Intent
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.util.regex.Pattern
+
+class SignUpStep1Activity : AppCompatActivity() {
+
+    private lateinit var btnBack: ImageView
+    private lateinit var tilEmail: TextInputLayout
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var tilPassword: TextInputLayout
+    private lateinit var etPassword: TextInputEditText
+    private lateinit var tilRepeatPassword: TextInputLayout
+    private lateinit var etRepeatPassword: TextInputEditText
+    private lateinit var cbTerms: CheckBox
+    private lateinit var btnNext: Button
+
+    // РїР°С‚С‚РµСЂРЅ email: name@domainname.com РёР»Рё .ru
+    private val emailPattern: Pattern = Pattern.compile(
+        "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.(com|ru)$",
+        Pattern.CASE_INSENSITIVE
+    )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_sign_up_step1)
+
+        initViews()
+        setupTextWatchers()
+        setupListeners()
+    }
+
+    private fun initViews() {
+        btnBack = findViewById(R.id.btnBack)
+        tilEmail = findViewById(R.id.tilEmail)
+        etEmail = findViewById(R.id.etEmail)
+        tilPassword = findViewById(R.id.tilPassword)
+        etPassword = findViewById(R.id.etPassword)
+        tilRepeatPassword = findViewById(R.id.tilRepeatPassword)
+        etRepeatPassword = findViewById(R.id.etRepeatPassword)
+        cbTerms = findViewById(R.id.cbTerms)
+        btnNext = findViewById(R.id.btnNext)
+    }
+
+    private fun setupTextWatchers() {
+        val clearErrorWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                tilEmail.error = null
+                tilPassword.error = null
+                tilRepeatPassword.error = null
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        etEmail.addTextChangedListener(clearErrorWatcher)
+        etPassword.addTextChangedListener(clearErrorWatcher)
+        etRepeatPassword.addTextChangedListener(clearErrorWatcher)
+    }
+
+    private fun setupListeners() {
+        // РєРЅРѕРїРєР° РЅР°Р·Р°Рґ: РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЅР° РїСЂРµРґС‹РґСѓС‰РёР№ СЌРєСЂР°РЅ
+        btnBack.setOnClickListener {
+            finish()
+        }
+
+        // РєРЅРѕРїРєР° РґР°Р»РµРµ
+        btnNext.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString()
+            val repeatPassword = etRepeatPassword.text.toString()
+
+            // РїСЂРѕРІРµСЂРєР° email
+            if (!emailPattern.matcher(email).matches()) {
+                tilEmail.error = getString(R.string.error_invalid_email)
+                return@setOnClickListener
+            }
+
+            // РїСЂРѕРІРµСЂРєР° РїСѓСЃС‚РѕРіРѕ РїР°СЂРѕР»СЏ
+            if (password.isEmpty()) {
+                tilPassword.error = getString(R.string.error_empty_password)
+                return@setOnClickListener
+            }
+
+            // РїСЂРѕРІРµСЂРєР° СЃРѕРІРїР°РґРµРЅРёСЏ РїР°СЂРѕР»РµР№
+            if (password != repeatPassword) {
+                tilRepeatPassword.error = getString(R.string.error_passwords_mismatch)
+                return@setOnClickListener
+            }
+
+            // РїСЂРѕРІРµСЂРєР° РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРіРѕ С‡РµРєР±РѕРєСЃР° СѓСЃР»РѕРІРёР№
+            if (!cbTerms.isChecked) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.error_terms_required),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            // СѓСЃРїРµС€РЅР°СЏ РІР°Р»РёРґР°С†РёСЏ: РїРµСЂРµРґР°РµРј РІРІРµРґРµРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РґР°Р»СЊС€Рµ
+            Toast.makeText(this, "РЁР°Рі 1 РїСЂРѕР№РґРµРЅ", Toast.LENGTH_SHORT).show()
+            // СѓСЃРїРµС€РЅР°СЏ РІР°Р»РёРґР°С†РёСЏ: РѕС‚РєСЂС‹РІР°РµРј С€Р°Рі 2 Рё РїРµСЂРµРґР°РµРј email Рё РїР°СЂРѕР»СЊ
+            val intent = Intent(this, SignUpStep2Activity::class.java).apply {
+                putExtra("extra_email", email)
+                putExtra("extra_password", password)
+            }
+            startActivity(intent)
+        }
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\SignUpStep2Activity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Intent
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class SignUpStep2Activity : AppCompatActivity() {
+
+    private lateinit var btnBack: ImageView
+    private lateinit var tilLastName: TextInputLayout
+    private lateinit var etLastName: TextInputEditText
+    private lateinit var tilFirstName: TextInputLayout
+    private lateinit var etFirstName: TextInputEditText
+    private lateinit var tilPatronymic: TextInputLayout
+    private lateinit var etPatronymic: TextInputEditText
+    private lateinit var tilBirthDate: TextInputLayout
+    private lateinit var etBirthDate: TextInputEditText
+    private lateinit var rgGender: RadioGroup
+    private lateinit var btnNext: Button
+
+    // РґР°РЅРЅС‹Рµ РёР· РїРµСЂРІРѕРіРѕ С€Р°РіР° СЂРµРіРёСЃС‚СЂР°С†РёРё
+    private var emailArg: String = ""
+    private var passwordArg: String = ""
+
+    // С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РґР°С‚С‹
+    private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_sign_up_step2)
+
+        emailArg = intent.getStringExtra("extra_email").orEmpty()
+        passwordArg = intent.getStringExtra("extra_password").orEmpty()
+
+        initViews()
+        setupDatePicker()
+        setupValidationWatchers()
+        setupListeners()
+    }
+
+    private fun initViews() {
+        btnBack = findViewById(R.id.btnBack)
+        tilLastName = findViewById(R.id.tilLastName)
+        etLastName = findViewById(R.id.etLastName)
+        tilFirstName = findViewById(R.id.tilFirstName)
+        etFirstName = findViewById(R.id.etFirstName)
+        tilPatronymic = findViewById(R.id.tilPatronymic)
+        etPatronymic = findViewById(R.id.etPatronymic)
+        tilBirthDate = findViewById(R.id.tilBirthDate)
+        etBirthDate = findViewById(R.id.etBirthDate)
+        rgGender = findViewById(R.id.rgGender)
+        btnNext = findViewById(R.id.btnNext)
+    }
+
+    private fun setupDatePicker() {
+        fun showPicker() {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Р’С‹Р±РѕСЂ РґР°С‚С‹ СЂРѕР¶РґРµРЅРёСЏ")
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selectedUtcMillis ->
+                val formattedDate = dateFormatter.format(Date(selectedUtcMillis))
+                etBirthDate.setText(formattedDate)
+                tilBirthDate.error = null
+                updateNextButtonState()
+            }
+
+            datePicker.show(supportFragmentManager, "birth_date_picker")
+        }
+
+        etBirthDate.setOnClickListener { showPicker() }
+        tilBirthDate.setStartIconOnClickListener { showPicker() }
+    }
+
+    private fun setupValidationWatchers() {
+        val watcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateNextButtonState()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        etLastName.addTextChangedListener(watcher)
+        etFirstName.addTextChangedListener(watcher)
+        rgGender.setOnCheckedChangeListener { _, _ -> updateNextButtonState() }
+    }
+
+    private fun updateNextButtonState() {
+        val isLastNameFilled = etLastName.text.toString().trim().isNotEmpty()
+        val isFirstNameFilled = etFirstName.text.toString().trim().isNotEmpty()
+        val isBirthDateFilled = etBirthDate.text.toString().trim().isNotEmpty()
+        val isGenderSelected = rgGender.checkedRadioButtonId != -1
+
+        // РєРЅРѕРїРєР° РґР°Р»РµРµ Р°РєС‚РёРІРЅР° С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ Р·Р°РїРѕР»РЅРµРЅРёСЏ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… РїРѕР»РµР№
+        btnNext.isEnabled = isLastNameFilled && isFirstNameFilled && isBirthDateFilled && isGenderSelected
+    }
+
+    private fun setupListeners() {
+        // РєРЅРѕРїРєР° РЅР°Р·Р°Рґ РІРѕР·РІСЂР°С‰Р°РµС‚ РЅР° С€Р°Рі 1
+        btnBack.setOnClickListener {
+            finish()
+        }
+
+        // РєРЅРѕРїРєР° РґР°Р»РµРµ
+        btnNext.setOnClickListener {
+            val lastName = etLastName.text.toString().trim()
+            val firstName = etFirstName.text.toString().trim()
+            val patronymic = etPatronymic.text.toString().trim()
+            val birthDate = etBirthDate.text.toString().trim()
+            val selectedGenderId = rgGender.checkedRadioButtonId
+
+            // РїСЂРѕРІРµСЂРєР° РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… РїРѕР»РµР№
+            if (lastName.isEmpty() || firstName.isEmpty() || birthDate.isEmpty() || selectedGenderId == -1) {
+                Toast.makeText(this, getString(R.string.error_fill_required_fields), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val gender = if (selectedGenderId == R.id.rbMale) {
+                getString(R.string.gender_male)
+            } else {
+                getString(R.string.gender_female)
+            }
+
+            Toast.makeText(this, "РЁР°Рі 2 РїСЂРѕР№РґРµРЅ", Toast.LENGTH_SHORT).show()
+            // РћС‚РєСЂС‹РІР°РµРј РЁР°Рі 3 Рё РїРµСЂРµРґР°РµРј РІСЃРµ РЅР°РєРѕРїР»РµРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ
+            val intent = Intent(this, SignUpStep3Activity::class.java).apply {
+                putExtra("extra_email", emailArg)
+                putExtra("extra_password", passwordArg)
+                putExtra("extra_last_name", lastName)
+                putExtra("extra_first_name", firstName)
+                putExtra("extra_patronymic", patronymic)
+                putExtra("extra_birth_date", birthDate)
+                putExtra("extra_gender", gender)
+            }
+            startActivity(intent)
+        }
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\SignUpStep3Activity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class SignUpStep3Activity : AppCompatActivity() {
+
+    private lateinit var btnBack: ImageView
+    private lateinit var ivAvatar: ImageView
+    private lateinit var tilDriverLicense: TextInputLayout
+    private lateinit var etDriverLicense: TextInputEditText
+    private lateinit var tilIssueDate: TextInputLayout
+    private lateinit var etIssueDate: TextInputEditText
+    private lateinit var btnUploadLicense: AppCompatButton
+    private lateinit var btnUploadPassport: AppCompatButton
+    private lateinit var btnNext: Button
+
+    // РґР°РЅРЅС‹Рµ СЃ РїСЂРµРґС‹РґСѓС‰РёС… СЌРєСЂР°РЅРѕРІ
+    private var emailArg: String = ""
+    private var passwordArg: String = ""
+    private var lastNameArg: String = ""
+    private var firstNameArg: String = ""
+    private var patronymicArg: String = ""
+    private var birthDateArg: String = ""
+    private var genderArg: String = ""
+
+    // С…СЂР°РЅРµРЅРёРµ Uri РІС‹Р±СЂР°РЅРЅС‹С… С„РѕС‚РѕРіСЂР°С„РёР№
+    private var avatarUri: Uri? = null
+    private var licensePhotoUri: Uri? = null
+    private var passportPhotoUri: Uri? = null
+
+    private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    // РєРѕРЅС‚СЂР°РєС‚ РґР»СЏ РІС‹Р±РѕСЂР° С„РѕС‚Рѕ Р°РІР°С‚Р°СЂР°
+    private val pickAvatarLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            avatarUri = uri
+            ivAvatar.setImageURI(uri)
+        }
+    }
+
+    // РєРѕРЅС‚СЂР°РєС‚ РґР»СЏ РІС‹Р±РѕСЂР° С„РѕС‚Рѕ РІРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СѓРґРѕСЃС‚РѕРІРµСЂРµРЅРёСЏ
+    private val pickLicenseLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            licensePhotoUri = uri
+            btnUploadLicense.text = getString(R.string.photo_uploaded)
+            updateNextButtonState()
+        }
+    }
+
+    // РєРѕРЅС‚СЂР°РєС‚ РґР»СЏ РІС‹Р±РѕСЂР° С„РѕС‚Рѕ РїР°СЃРїРѕСЂС‚Р°
+    private val pickPassportLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            passportPhotoUri = uri
+            btnUploadPassport.text = getString(R.string.photo_uploaded)
+            updateNextButtonState()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_sign_up_step3)
+
+        readIntentExtras()
+        initViews()
+        setupDatePicker()
+        setupImagePickers()
+        setupTextWatchers()
+        setupListeners()
+    }
+
+    private fun readIntentExtras() {
+        emailArg = intent.getStringExtra("extra_email").orEmpty()
+        passwordArg = intent.getStringExtra("extra_password").orEmpty()
+        lastNameArg = intent.getStringExtra("extra_last_name").orEmpty()
+        firstNameArg = intent.getStringExtra("extra_first_name").orEmpty()
+        patronymicArg = intent.getStringExtra("extra_patronymic").orEmpty()
+        birthDateArg = intent.getStringExtra("extra_birth_date").orEmpty()
+        genderArg = intent.getStringExtra("extra_gender").orEmpty()
+    }
+
+    private fun initViews() {
+        btnBack = findViewById(R.id.btnBack)
+        ivAvatar = findViewById(R.id.ivAvatar)
+        tilDriverLicense = findViewById(R.id.tilDriverLicense)
+        etDriverLicense = findViewById(R.id.etDriverLicense)
+        tilIssueDate = findViewById(R.id.tilIssueDate)
+        etIssueDate = findViewById(R.id.etIssueDate)
+        btnUploadLicense = findViewById(R.id.btnUploadLicense)
+        btnUploadPassport = findViewById(R.id.btnUploadPassport)
+        btnNext = findViewById(R.id.btnNext)
+    }
+
+    private fun setupDatePicker() {
+        fun showPicker() {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Р’С‹Р±РѕСЂ РґР°С‚С‹ РІС‹РґР°С‡Рё")
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selectedUtcMillis ->
+                val formattedDate = dateFormatter.format(Date(selectedUtcMillis))
+                etIssueDate.setText(formattedDate)
+                tilIssueDate.error = null
+                updateNextButtonState()
+            }
+
+            datePicker.show(supportFragmentManager, "issue_date_picker")
+        }
+
+        etIssueDate.setOnClickListener { showPicker() }
+        tilIssueDate.setStartIconOnClickListener { showPicker() }
+    }
+
+    private fun setupImagePickers() {
+        // РІС‹Р±РѕСЂ С„РѕС‚Рѕ Р°РІР°С‚Р°СЂР°
+        ivAvatar.setOnClickListener {
+            pickAvatarLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+
+        // РІС‹Р±РѕСЂ С„РѕС‚Рѕ РїСЂР°РІ
+        btnUploadLicense.setOnClickListener {
+            pickLicenseLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+
+        // РІС‹Р±РѕСЂ С„РѕС‚Рѕ РїР°СЃРїРѕСЂС‚Р°
+        btnUploadPassport.setOnClickListener {
+            pickPassportLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+    }
+
+    private fun setupTextWatchers() {
+        etDriverLicense.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                tilDriverLicense.error = null
+                updateNextButtonState()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun updateNextButtonState() {
+        val license = etDriverLicense.text.toString().trim()
+        val issueDate = etIssueDate.text.toString().trim()
+
+        // 10 СЃРёРјРІРѕР»РѕРІ РЅРѕРјРµСЂР° Р’РЈ, Р·Р°РїРѕР»РЅРµРЅРЅР°СЏ РґР°С‚Р° Рё РѕР±Р° Р·Р°РіСЂСѓР¶РµРЅРЅС‹С… С„РѕС‚Рѕ
+        val isLicenseValid = license.length == 10
+        val isDateFilled = issueDate.isNotEmpty()
+        val arePhotosUploaded = (licensePhotoUri != null) && (passportPhotoUri != null)
+
+        btnNext.isEnabled = isLicenseValid && isDateFilled && arePhotosUploaded
+    }
+
+    private fun setupListeners() {
+        // РЅР°Р·Р°Рґ: РІРѕР·РІСЂР°С‚ РЅР° С€Р°Рі 2
+        btnBack.setOnClickListener {
+            finish()
+        }
+
+        // РґР°Р»РµРµ: РїРµСЂРµС…РѕРґ РЅР° СЌРєСЂР°РЅ РїРѕР·РґСЂР°РІР»РµРЅРёСЏ
+        btnNext.setOnClickListener {
+            val license = etDriverLicense.text.toString().trim()
+            val issueDate = etIssueDate.text.toString().trim()
+
+            if (license.length != 10) {
+                tilDriverLicense.error = getString(R.string.error_license_length)
+                return@setOnClickListener
+            }
+
+            if (issueDate.isEmpty()) {
+                tilIssueDate.error = getString(R.string.error_invalid_issue_date)
+                return@setOnClickListener
+            }
+
+            if (licensePhotoUri == null || passportPhotoUri == null) {
+                Toast.makeText(this, getString(R.string.error_missing_photos), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            Toast.makeText(this, "РЁР°Рі 3 РїСЂРѕР№РґРµРЅ! Р’СЃРµ РґРѕРєСѓРјРµРЅС‚С‹ Р·Р°РіСЂСѓР¶РµРЅС‹", Toast.LENGTH_SHORT).show()
+            // РїРµСЂРµС…РѕРґ РЅР° СЌРєСЂР°РЅ РїРѕР·РґСЂР°РІР»РµРЅРёСЏ
+            val intent = Intent(this, SignUpSuccessActivity::class.java)
+            startActivity(intent)
+        }
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\java\ru\mtuci\drivenext\SignUpSuccessActivity.kt ===
+package ru.mtuci.drivenext
+
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+
+class SignUpSuccessActivity : AppCompatActivity() {
+
+    private lateinit var btnGoToMain: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_DriveNext)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_sign_up_success)
+
+        // СЃРѕС…СЂР°РЅСЏРµРј С„Р»Р°Рі СѓСЃРїРµС€РЅРѕР№ Р°РІС‚РѕСЂРёР·Р°С†РёРё РІ SharedPreferences
+        val sharedPref = getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("is_logged_in", true)
+            apply()
+        }
+
+        // РѕР±СЂР°Р±РѕС‚РєР° РєР»РёРєР° РїРµСЂРµС…РѕРґР° РЅР° РіР»Р°РІРЅС‹Р№ СЌРєСЂР°РЅ
+        btnGoToMain = findViewById(R.id.btnGoToMain)
+        btnGoToMain.setOnClickListener {
+            // РїРµСЂРµС…РѕРґ РІ MainActivity СЃ РїРѕР»РЅРѕР№ РѕС‡РёСЃС‚РєРѕР№ СЃС‚РµРєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё
+            val intent = Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            finish()
+        }
+    }
+}
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\btn_google_background.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="1dp"
+        android:color="#E0E0E0" />
+    <corners android:radius="12dp" />
+</shape>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\btn_outlined_secondary.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="1.5dp"
+        android:color="@color/brand_primary" />
+    <corners android:radius="12dp" />
+</shape>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\btn_upload_background.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/white" />
+    <stroke
+        android:width="1dp"
+        android:color="#CCCCCC" />
+    <corners android:radius="10dp" />
+</shape>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_arrow_back.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/black"
+        android:pathData="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_avatar_placeholder.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#F0F0F0"
+        android:pathData="M50,0A50,50 0 1,0 100,50 50,50 0 0,0 50,0z"/>
+    <path
+        android:fillColor="#BDBDBD"
+        android:pathData="M50,22a16,16 0 1,0 16,16A16,16 0 0,0 50,22zm0,40c-15.3,0 -32,7.7 -32,16v6h64v-6C82,69.7 65.3,62 50,62z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_calendar.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/text_secondary"
+        android:pathData="M19,4h-1V2h-2v2H8V2H6v2H5C3.89,4 3.01,4.9 3.01,6L3,20c0,1.1 0.89,2 2,2h14c1.1,0 2,-0.9 2,-2V6C21,4.9 20.1,4 19,4zM19,20H5V9h14V20zM7,11h5v5H7V11z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_google_logo.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#EA4335"
+        android:pathData="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+    <path
+        android:fillColor="#4285F4"
+        android:pathData="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+    <path
+        android:fillColor="#FBBC05"
+        android:pathData="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+    <path
+        android:fillColor="#34A853"
+        android:pathData="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_launcher_background.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M0,0h108v108h-108z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M9,0L9,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,0L19,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,0L29,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,0L39,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,0L49,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,0L59,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,0L69,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,0L79,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M89,0L89,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M99,0L99,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,9L108,9"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,19L108,19"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,29L108,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,39L108,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,49L108,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,59L108,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,69L108,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,79L108,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,89L108,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,99L108,99"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,29L89,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,39L89,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,49L89,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,59L89,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,69L89,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,79L89,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,19L29,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,19L39,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,19L49,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,19L59,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,19L69,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,19L79,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_launcher_foreground.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="85.84757"
+                android:endY="92.4963"
+                android:startX="42.9492"
+                android:startY="49.59793"
+                android:type="linear">
+                <item
+                    android:color="#44000000"
+                    android:offset="0.0" />
+                <item
+                    android:color="#00000000"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="nonZero"
+        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_no_internet.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/brand_primary"
+        android:pathData="M23.64,7c-0.45,-0.34 -4.93,-4 -11.64,-4C5.28,3 0.81,6.66 0.36,7l10.08,12.56c0.8,0.99 2.32,0.99 3.12,0L23.64,7zM3.4,7.44C6.1,5.46 9.42,4.5 12,4.5c2.58,0 5.9,0.96 8.6,2.44L12,18.15 3.4,7.44z"/>
+    <path
+        android:fillColor="@color/brand_primary"
+        android:pathData="M2.29,1.71L1.02,2.98l19.99,19.99 1.27,-1.27L2.29,1.71z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_splash_icon_padded.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/ic_splash_logo"
+        android:width="96dp"
+        android:height="96dp"
+        android:gravity="center" />
+</layer-list>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_splash_logo.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/brand_primary"
+        android:pathData="M18.92,6.01C18.72,5.42 18.16,5 17.5,5h-11c-0.66,0 -1.21,0.42 -1.42,1.01L3,12v8c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-1h12v1c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-8l-2.08,-5.99zM6.5,16c-0.83,0 -1.5,-0.67 -1.5,-1.5S5.67,13 6.5,13s1.5,0.67 1.5,1.5S7.33,16 6.5,16zM17.5,16c-0.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5zM5,11l1.5,-4.5h11L19,11H5z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_success_circle.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M60,0A60,60 0 1,0 120,60 60,60 0 0,0 60,0z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50.5,79.5 L31,60 L36.7,54.3 L50.5,68.1 L83.3,35.3 L89,41 L50.5,79.5 Z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\ic_upload.xml ===
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/black"
+        android:pathData="M9,16h6v-6h4l-7,-7 -7,7h4v6zm-4,2h14v2H5v-2z"/>
+</vector>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\indicator_dot_active.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/brand_primary" />
+    <corners android:radius="4dp" />
+    <size
+        android:width="24dp"
+        android:height="8dp" />
+</shape>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\drawable\indicator_dot_inactive.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/text_secondary" />
+    <size
+        android:width="8dp"
+        android:height="8dp" />
+</shape>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_auth_choice.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- РЅР°Р·РІР°РЅРёРµ РїСЂРёР»РѕР¶РµРЅРёСЏ СЃРІРµСЂС…Сѓ СЃР»РµРІР° -->
+    <TextView
+        android:id="@+id/tvAppTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/app_name"
+        android:textColor="@color/brand_primary"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Р»РѕРіРѕС‚РёРї РїСЂРёР»РѕР¶РµРЅРёСЏ РІ С†РµРЅС‚СЂРµ СЌРєСЂР°РЅР° -->
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_splash_logo"
+        app:layout_constraintBottom_toTopOf="@+id/tvSlogan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAppTitle"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <!-- СЃР»РѕРіР°РЅ РїРѕРґ Р»РѕРіРѕС‚РёРїРѕРј -->
+    <TextView
+        android:id="@+id/tvSlogan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="@string/auth_choice_slogan"
+        android:textColor="@color/brand_primary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/btnSignIn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivLogo" />
+
+    <!-- РєРЅРѕРїРєР° РІРѕР№С‚Рё -->
+    <Button
+        android:id="@+id/btnSignIn"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="@color/brand_primary"
+        android:text="@string/btn_sign_in"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnSignUp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- РєРЅРѕРїРєР° Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSignUp"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_outlined_secondary"
+        android:text="@string/btn_sign_up"
+        android:textColor="@color/brand_primary"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_main.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splash_background"
+    android:padding="24dp">
+
+    <!-- РЅР·РІР°РЅРёРµ РїСЂРёР»РѕР¶РµРЅРёСЏ СЃР»РµРІР° СЃРІРµСЂС…Сѓ -->
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/app_name"
+        android:textColor="@color/brand_primary"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- РѕРїРёСЃР°РЅРёРµ СЃСЂР°Р·Сѓ РїРѕРґ РЅР°Р·РІР°РЅРёРµРј -->
+    <TextView
+        android:id="@+id/tvSlogan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/splash_slogan"
+        android:textColor="@color/text_secondary"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvAppName"
+        app:layout_constraintTop_toBottomOf="@+id/tvAppName" />
+
+    <!-- Р»РѕРіРѕС‚РёРї РІ С†РµРЅС‚СЂРµ СЌРєСЂР°РЅР° -->
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:contentDescription="@string/cd_splash_logo"
+        android:src="@drawable/ic_splash_logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_no_internet.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/ivNoInternet"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_no_internet"
+        app:layout_constraintBottom_toTopOf="@+id/tvNoInternetTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/tvNoInternetTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="@string/no_internet_title"
+        android:textColor="@color/brand_primary"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvNoInternetDesc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivNoInternet" />
+
+    <TextView
+        android:id="@+id/tvNoInternetDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/no_internet_desc"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnRetry"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvNoInternetTitle" />
+
+    <Button
+        android:id="@+id/btnRetry"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/brand_primary"
+        android:text="@string/no_internet_retry"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_onboarding.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btnSkip"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/onboarding_skip"
+        android:textColor="@color/brand_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/layoutIndicators"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSkip" />
+
+    <!-- РєРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ С‚РѕС‡РµРє-РёРЅРґРёРєР°С‚РѕСЂРѕРІ -->
+    <LinearLayout
+        android:id="@+id/layoutIndicators"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/btnNext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/brand_primary"
+        android:text="@string/onboarding_next"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_sign_in.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvSignInTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/sign_in_title"
+        android:textColor="@color/black"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvSignInSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/sign_in_subtitle"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSignInTitle" />
+
+    <!-- РїРѕР»Рµ СЌР»РµРєС‚СЂРѕРЅРЅР°СЏ РїРѕС‡С‚Р° -->
+    <TextView
+        android:id="@+id/lblEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="@string/label_email"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSignInSubtitle" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilEmail"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblEmail">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:padding="16dp"
+            android:textSize="15sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- РїРѕР»Рµ РџР°СЂРѕР»СЊ -->
+    <TextView
+        android:id="@+id/lblPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/label_password"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tilEmail" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblPassword">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textSize="15sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- РєРЅРѕРїРєР°/СЃСЃС‹Р»РєР° Р·Р°Р±С‹Р»Рё РїР°СЂРѕР»СЊ? -->
+    <TextView
+        android:id="@+id/tvForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/forgot_password"
+        android:textColor="@color/brand_primary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tilPassword" />
+
+    <!-- РєРЅРѕРїРєР° РІРѕР№С‚Рё -->
+    <Button
+        android:id="@+id/btnSignInAction"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="28dp"
+        android:backgroundTint="@color/brand_primary"
+        android:enabled="false"
+        android:text="@string/btn_sign_in"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvForgotPassword" />
+
+    <!-- РєРЅРѕРїРєР° Р’РѕР№С‚Рё С‡РµСЂРµР· Google -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnGoogleSignIn"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/btn_google_background"
+        android:drawableStart="@drawable/ic_google_logo"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="@string/btn_google_sign_in"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSignInAction" />
+
+    <!-- СЃСЃС‹Р»РєР° РЅР° СЂРµРіРёСЃС‚СЂР°С†РёСЋ РІРЅРёР·Сѓ -->
+    <TextView
+        android:id="@+id/tvGoToSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        android:text="@string/link_to_sign_up"
+        android:textColor="@color/brand_primary"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_sign_up_step1.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- РєРЅРѕРїРєР° РЅР°Р·Р°Рґ -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@null"
+        android:padding="4dp"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Р·Р°РіРѕР»РѕРІРѕРє СЌРєСЂР°РЅР°: СЃРѕР·РґР°С‚СЊ Р°РєРєР°СѓРЅС‚ -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up_title"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnBack" />
+
+    <!-- РїРѕР»Рµ СЌР»РµРєС‚СЂРѕРЅРЅР°СЏ РїРѕС‡С‚Р° -->
+    <TextView
+        android:id="@+id/lblEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="@string/label_email"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBack" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilEmail"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblEmail">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:padding="16dp"
+            android:textSize="15sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- РїРѕР»Рµ РїСЂРёРґСѓРјР°Р№С‚Рµ РїР°СЂРѕР»СЊ -->
+    <TextView
+        android:id="@+id/lblPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/label_create_password"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tilEmail" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblPassword">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textSize="15sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- РїРѕР»Рµ РїРѕРІС‚РѕСЂРёС‚Рµ РїР°СЂРѕР»СЊ -->
+    <TextView
+        android:id="@+id/lblRepeatPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/label_repeat_password"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tilPassword" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilRepeatPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblRepeatPassword">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etRepeatPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_repeat_password"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textSize="15sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- С‡РµРєР±РѕРєСЃ СЃРѕРіР»Р°СЃРёСЏ СЃ СѓСЃР»РѕРІРёСЏРјРё -->
+    <CheckBox
+        android:id="@+id/cbTerms"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:buttonTint="@color/brand_primary"
+        android:text="@string/checkbox_terms"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tilRepeatPassword" />
+
+    <!-- РєРЅРѕРїРєР° РґР°Р»РµРµ -->
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/brand_primary"
+        android:text="@string/btn_next"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_sign_up_step2.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- РєРЅРѕРїРєР° РЅР°Р·Р°Рґ -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@null"
+        android:padding="4dp"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Р·Р°РіРѕР»РѕРІРѕРє СЃРѕР·РґР°С‚СЊ Р°РєРєР°СѓРЅС‚ -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up_title"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnBack" />
+
+    <!-- СЃРєСЂРѕР»Р»-РєРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РїРѕР»РµР№ РІРІРѕРґР° -->
+    <ScrollView
+        android:id="@+id/scrollViewContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/btnNext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBack">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- С„Р°РјРёР»РёСЏ -->
+            <TextView
+                android:id="@+id/lblLastName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/label_last_name"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLastName"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_last_name"
+                    android:inputType="textCapWords"
+                    android:padding="16dp"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- РёРјСЏ -->
+            <TextView
+                android:id="@+id/lblFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/label_first_name"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFirstName"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_first_name"
+                    android:inputType="textCapWords"
+                    android:padding="16dp"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- РѕС‚С‡РµСЃС‚РІРѕ -->
+            <TextView
+                android:id="@+id/lblPatronymic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/label_patronymic"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPatronymic"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPatronymic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_patronymic"
+                    android:inputType="textCapWords"
+                    android:padding="16dp"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- РґР°С‚Р° СЂРѕР¶РґРµРЅРёСЏ СЃ РёРєРѕРЅРєРѕР№ РєР°Р»РµРЅРґР°СЂСЏ -->
+            <TextView
+                android:id="@+id/lblBirthDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/label_birth_date"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilBirthDate"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:startIconDrawable="@drawable/ic_calendar">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBirthDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:hint="@string/hint_birth_date"
+                    android:inputType="none"
+                    android:padding="16dp"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- РІС‹Р±РѕСЂ РїРѕР»Р° С‡РµСЂРµР· RadioGroup -->
+            <TextView
+                android:id="@+id/lblGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/label_gender"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <RadioGroup
+                android:id="@+id/rgGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:buttonTint="@color/brand_primary"
+                    android:text="@string/gender_male"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <RadioButton
+                    android:id="@+id/rbFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/brand_primary"
+                    android:text="@string/gender_female"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+            </RadioGroup>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- РєРЅРѕРїРєР° РґР°Р»РµРµ. Р°РєС‚РёРІРЅР° РїСЂРё Р·Р°РїРѕР»РЅРµРЅРёРё РѕР±СЏР·Р°С‚РµР»СЊРЅС‹С… РїРѕР»РµР№ -->
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/brand_primary"
+        android:enabled="false"
+        android:text="@string/btn_next"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_sign_up_step3.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- РєРЅРѕРїРєР° РЅР°Р·Р°Рґ -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@null"
+        android:padding="4dp"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Р·Р°РіРѕР»РѕРІРѕРє СЌРєСЂР°РЅР° -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up_title"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnBack" />
+
+    <ScrollView
+        android:id="@+id/scrollViewContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/btnNext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBack">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <!-- С„РѕС‚Рѕ РїСЂРѕС„РёР»СЏ/Р°РІР°С‚Р°СЂ -->
+            <ImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_avatar_placeholder" />
+
+            <!-- РїРѕСЏСЃРЅСЏСЋС‰РёР№ С‚РµРєСЃС‚ -->
+            <TextView
+                android:id="@+id/tvAvatarHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="@string/avatar_description_hint"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+
+            <!-- РЅРѕРјРµСЂ РІРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СѓРґРѕСЃС‚РѕРІРµСЂРµРЅРёСЏ -->
+            <TextView
+                android:id="@+id/lblDriverLicense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/label_driver_license"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDriverLicense"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="10">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDriverLicense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_driver_license"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:padding="16dp"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- РґР°С‚Р° РІС‹РґР°С‡Рё СЃ РёРєРѕРЅРєРѕР№ РєР°Р»РµРЅРґР°СЂСЏ -->
+            <TextView
+                android:id="@+id/lblIssueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/label_issue_date"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilIssueDate"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:startIconDrawable="@drawable/ic_calendar">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etIssueDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:hint="@string/hint_birth_date"
+                    android:inputType="none"
+                    android:padding="16dp"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Р·Р°РіСЂСѓР·РєР° С„РѕС‚Рѕ РІРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СѓРґРѕСЃС‚РѕРІРµСЂРµРЅРёСЏ -->
+            <TextView
+                android:id="@+id/lblUploadLicense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/label_upload_license"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnUploadLicense"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/btn_upload_background"
+                android:drawableStart="@drawable/ic_upload"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/btn_upload_photo"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+            <!-- Р·Р°РіСЂСѓР·РєР° С„РѕС‚Рѕ РїР°СЃРїРѕСЂС‚Р° -->
+            <TextView
+                android:id="@+id/lblUploadPassport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/label_upload_passport"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnUploadPassport"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/btn_upload_background"
+                android:drawableStart="@drawable/ic_upload"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/btn_upload_photo"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- РєРЅРѕРїРєР° РґР°Р»РµРµ -->
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/brand_primary"
+        android:enabled="false"
+        android:text="@string/btn_next"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\activity_sign_up_success.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- РёРєРѕРЅРєР° СѓСЃРїРµС€РЅРѕР№ СЂРµРіРёСЃС‚СЂР°С†РёРё -->
+    <ImageView
+        android:id="@+id/ivSuccess"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_success_circle"
+        app:layout_constraintBottom_toTopOf="@+id/tvSuccessTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <!-- Р·Р°РіРѕР»РѕРІРѕРє РїРѕР·РґСЂР°РІР»СЏРµРј -->
+    <TextView
+        android:id="@+id/tvSuccessTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/success_title"
+        android:textColor="@color/black"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvSuccessSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivSuccess" />
+
+    <!-- РџРїРѕРґР·Р°РіРѕР»РѕРІРѕРє: РІС‹ СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°Р»Рё Р°РєРєР°СѓРЅС‚ -->
+    <TextView
+        android:id="@+id/tvSuccessSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/success_subtitle"
+        android:textColor="@color/brand_primary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvSuccessDesc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSuccessTitle" />
+
+    <!-- РѕРїРёСЃР°РЅРёРµ -->
+    <TextView
+        android:id="@+id/tvSuccessDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="@string/success_description"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoToMain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSuccessSubtitle" />
+
+    <!-- РєРЅРѕРїРєР° РїРµСЂРµС…РѕРґР° РЅР° РіР»Р°РІРЅС‹Р№ СЌРєСЂР°РЅ -->
+    <Button
+        android:id="@+id/btnGoToMain"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/brand_primary"
+        android:text="@string/btn_go_to_main"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\layout\item_onboarding_page.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/ivOnboardingImage"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_splash_logo"
+        app:layout_constraintBottom_toTopOf="@+id/tvOnboardingTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/tvOnboardingTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:textColor="@color/brand_primary"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvOnboardingDesc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivOnboardingImage" />
+
+    <TextView
+        android:id="@+id/tvOnboardingDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvOnboardingTitle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\values\colors.xml ===
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="splash_background">#FFFFFF</color>
+    <color name="brand_primary">#23184E</color>
+    <color name="text_secondary">#757575</color>
+</resources>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\values\strings.xml ===
+<resources>
+    <string name="app_name">DriveNext</string>
+    <string name="splash_slogan">РџРѕРјРѕР¶РµРј РЅР°Р№С‚Рё С‚РІРѕСЋ СЃР»РµРґСѓСЋС‰СѓСЋ РїРѕРµР·РґРєСѓ</string>
+    <string name="cd_splash_logo">Р›РѕРіРѕС‚РёРї DriveNext</string>
+
+    <!-- СЃС‚СЂРѕРєРё РѕРЅР±РѕСЂРґРёРЅРіР° -->
+    <string name="onboarding_skip">РџСЂРѕРїСѓСЃС‚РёС‚СЊ</string>
+    <string name="onboarding_next">Р”Р°Р»РµРµ</string>
+    <string name="onboarding_start">РќР°С‡Р°С‚СЊ</string>
+
+    <!-- СЃР»Р°Р№Рґ 1 -->
+    <string name="onboarding_title_1">Р‘С‹СЃС‚СЂРѕРµ Р±СЂРѕРЅРёСЂРѕРІР°РЅРёРµ</string>
+    <string name="onboarding_desc_1">РќР°Р№РґРёС‚Рµ Рё Р·Р°Р±СЂРѕРЅРёСЂСѓР№С‚Рµ Р°РІС‚РѕРјРѕР±РёР»СЊ Р·Р° РїР°СЂСѓ РєР»РёРєРѕРІ РІ Р»СЋР±РѕР№ С‚РѕС‡РєРµ РіРѕСЂРѕРґР°.</string>
+
+    <!-- СЃР»Р°Р№Рґ 2 -->
+    <string name="onboarding_title_2">Р‘РѕР»СЊС€РѕР№ Р°РІС‚РѕРїР°СЂРє</string>
+    <string name="onboarding_desc_2">РћС‚ РєРѕРјРїР°РєС‚РЅС‹С… РіРѕСЂРѕРґСЃРєРёС… Р°РІС‚Рѕ РґРѕ РєРѕРјС„РѕСЂС‚РЅС‹С… РїСЂРµРјРёР°Р»СЊРЅС‹С… СЃРµРґР°РЅРѕРІ.</string>
+
+    <!-- СЃР»Р°Р№Рґ 3 -->
+    <string name="onboarding_title_3">Р’С‹РіРѕРґРЅС‹Рµ С‚Р°СЂРёС„С‹</string>
+    <string name="onboarding_desc_3">РџРѕРјРёРЅСѓС‚РЅР°СЏ, С‡Р°СЃРѕРІР°СЏ Рё РїРѕСЃСѓС‚РѕС‡РЅР°СЏ Р°СЂРµРЅРґР° Р±РµР· СЃРєСЂС‹С‚С‹С… РїР»Р°С‚РµР¶РµР№.</string>
+
+    <!-- СЌРєСЂР°РЅ РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РёРЅС‚РµСЂРЅРµС‚Р° -->
+    <string name="no_internet_title">РќРµС‚ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє СЃРµС‚Рё</string>
+    <string name="no_internet_desc">РџСЂРѕРІРµСЂСЊС‚Рµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Wi-Fi РёР»Рё РјРѕР±РёР»СЊРЅРѕРјСѓ РёРЅС‚РµСЂРЅРµС‚Сѓ Рё РїРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°.</string>
+    <string name="no_internet_retry">РџРѕРІС‚РѕСЂРёС‚СЊ РїРѕРїС‹С‚РєСѓ</string>
+
+    <!-- СЌРєСЂР°РЅ РІС‹Р±РѕСЂР° РІС…РѕРґР°/СЂРµРіРёСЃС‚СЂР°С†РёРё -->
+    <string name="auth_choice_slogan">РџРѕРјРѕР¶РµРј РЅР°Р№С‚Рё С‚РІРѕСЋ СЃР»РµРґСѓСЋС‰СѓСЋ РїРѕРµР·РґРєСѓ</string>
+    <string name="btn_sign_in">Р’РѕР№С‚Рё</string>
+    <string name="btn_sign_up">Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ</string>
+
+    <!-- СЌРєСЂР°РЅ РІС…РѕРґ РІ Р°РєРєР°СѓРЅС‚ -->
+    <string name="sign_in_title">Р’РѕР№РґРёС‚Рµ РІ Р°РєРєР°СѓРЅС‚</string>
+    <string name="sign_in_subtitle">РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РІРІРµРґРёС‚Рµ СЃРІРѕРё РґР°РЅРЅС‹Рµ</string>
+    <string name="label_email">Р­Р»РµРєС‚СЂРѕРЅРЅР°СЏ РїРѕС‡С‚Р°</string>
+    <string name="hint_email">Р’РІРµРґРёС‚Рµ СЌР»РµРєС‚СЂРѕРЅРЅСѓСЋ РїРѕС‡С‚Сѓ</string>
+    <string name="label_password">РџР°СЂРѕР»СЊ</string>
+    <string name="hint_password">Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ</string>
+    <string name="forgot_password">Р—Р°Р±С‹Р»Рё РїР°СЂРѕР»СЊ?</string>
+    <string name="btn_google_sign_in">Р’РѕР№С‚Рё С‡РµСЂРµР· Google</string>
+    <string name="link_to_sign_up">Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ</string>
+    <string name="error_invalid_email">Р’РІРµРґРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅС‹Р№ Р°РґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹.</string>
+    <string name="error_empty_password">РџР°СЂРѕР»СЊ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј.</string>
+    <string name="error_auth_failed">РќРµРІРµСЂРЅС‹Р№ Р°РґСЂРµСЃ РїРѕС‡С‚С‹ РёР»Рё РїР°СЂРѕР»СЊ.</string>
+
+    <!-- СЌРєСЂР°РЅ СЂРµРіРёСЃС‚СЂР°С†РёРё -->
+    <string name="sign_up_title">РЎРѕР·РґР°С‚СЊ Р°РєРєР°СѓРЅС‚</string>
+    <string name="label_create_password">РџСЂРёРґСѓРјР°Р№С‚Рµ РїР°СЂРѕР»СЊ</string>
+    <string name="label_repeat_password">РџРѕРІС‚РѕСЂРёС‚Рµ РїР°СЂРѕР»СЊ</string>
+    <string name="hint_repeat_password">Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ</string>
+    <string name="checkbox_terms">РЇ СЃРѕРіР»Р°СЃРµРЅ СЃ СѓСЃР»РѕРІРёСЏРјРё РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ Рё РїРѕР»РёС‚РёРєРѕР№ РєРѕРЅС„РёРґРµРЅС†РёР°Р»СЊРЅРѕСЃС‚Рё</string>
+    <string name="btn_next">Р”Р°Р»РµРµ</string>
+    <string name="error_passwords_mismatch">РџР°СЂРѕР»Рё РЅРµ СЃРѕРІРїР°РґР°СЋС‚.</string>
+    <string name="error_terms_required">РќРµРѕР±С…РѕРґРёРјРѕ СЃРѕРіР»Р°СЃРёС‚СЊСЃСЏ СЃ СѓСЃР»РѕРІРёСЏРјРё РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ Рё РїРѕР»РёС‚РёРєРѕР№ РєРѕРЅС„РёРґРµРЅС†РёР°Р»СЊРЅРѕСЃС‚Рё.</string>
+
+    <!-- 2 СЌРєСЂР°РЅ Р РµРіРёСЃС‚СЂР°С†РёРё -->
+    <string name="label_last_name">Р¤Р°РјРёР»РёСЏ</string>
+    <string name="hint_last_name">Р’РІРµРґРёС‚Рµ С„Р°РјРёР»РёСЋ</string>
+    <string name="label_first_name">РРјСЏ</string>
+    <string name="hint_first_name">Р’РІРµРґРёС‚Рµ РёРјСЏ</string>
+    <string name="label_patronymic">РћС‚С‡РµСЃС‚РІРѕ</string>
+    <string name="hint_patronymic">Р’РІРµРґРёС‚Рµ РѕС‚С‡РµСЃС‚РІРѕ</string>
+    <string name="label_birth_date">Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ</string>
+    <string name="hint_birth_date">DD/MM/YYYY</string>
+    <string name="label_gender">РџРѕР»</string>
+    <string name="gender_male">РњСѓР¶СЃРєРѕР№</string>
+    <string name="gender_female">Р–РµРЅСЃРєРёР№</string>
+    <string name="error_fill_required_fields">РџРѕР¶Р°Р»СѓР№СЃС‚Р°, Р·Р°РїРѕР»РЅРёС‚Рµ РІСЃРµ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ.</string>
+    <string name="error_invalid_birth_date">Р’РІРµРґРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅСѓСЋ РґР°С‚Сѓ СЂРѕР¶РґРµРЅРёСЏ.</string>
+
+    <!-- 3 СЌРєСЂР°РЅ СЂРµРіРёСЃС‚СЂР°С†РёРё -->
+    <string name="avatar_description_hint">Р”РѕР±Р°РІР»РµРЅРёРµ С„РѕС‚РѕРіСЂР°С„РёРё РїРѕРјРѕР¶РµС‚ РІР»Р°РґРµР»СЊС†Р°Рј Рё Р°СЂРµРЅРґР°С‚РѕСЂР°Рј СѓР·РЅР°С‚СЊ РґСЂСѓРі РґСЂСѓРіР°, РєРѕРіРґР° РѕРЅРё Р±СѓРґСѓС‚ Р·Р°Р±РёСЂР°С‚СЊ РјР°С€РёРЅСѓ</string>
+    <string name="label_driver_license">РќРѕРјРµСЂ РІРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СѓРґРѕСЃС‚РѕРІРµСЂРµРЅРёСЏ</string>
+    <string name="hint_driver_license">0000000000</string>
+    <string name="label_issue_date">Р”Р°С‚Р° РІС‹РґР°С‡Рё</string>
+    <string name="label_upload_license">Р—Р°РіСЂСѓР·РёС‚Рµ С„РѕС‚Рѕ РІРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ СѓРґРѕСЃС‚РѕРІРµСЂРµРЅРёСЏ</string>
+    <string name="label_upload_passport">Р—Р°РіСЂСѓР·РёС‚Рµ С„РѕС‚Рѕ РїР°СЃРїРѕСЂС‚Р°</string>
+    <string name="btn_upload_photo">Р—Р°РіСЂСѓР·РёС‚СЊ С„РѕС‚Рѕ</string>
+    <string name="photo_uploaded">Р¤РѕС‚Рѕ Р·Р°РіСЂСѓР¶РµРЅРѕ вњ“</string>
+    <string name="error_license_length">РќРѕРјРµСЂ Р’РЈ РґРѕР»Р¶РµРЅ СЃРѕРґРµСЂР¶Р°С‚СЊ СЂРѕРІРЅРѕ 10 СЃРёРјРІРѕР»РѕРІ.</string>
+    <string name="error_invalid_issue_date">Р’РІРµРґРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅСѓСЋ РґР°С‚Сѓ РІС‹РґР°С‡Рё.</string>
+    <string name="error_missing_photos">РџРѕР¶Р°Р»СѓР№СЃС‚Р°, Р·Р°РіСЂСѓР·РёС‚Рµ РІСЃРµ РЅРµРѕР±С…РѕРґРёРјС‹Рµ С„РѕС‚Рѕ.</string>
+
+    <!-- СЌРєСЂР°РЅ СѓСЃРїРµС€РЅРѕР№ СЂРµРіРёСЃС‚СЂР°С†РёРё -->
+    <string name="success_title">РџРѕР·РґСЂР°РІР»СЏРµРј!</string>
+    <string name="success_subtitle">Р’С‹ СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°Р»Рё Р°РєРєР°СѓРЅС‚</string>
+    <string name="success_description">РўРµРїРµСЂСЊ РІС‹ РјРѕР¶РµС‚Рµ РЅР°С‡Р°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РІСЃРµРјРё РІРѕР·РјРѕР¶РЅРѕСЃС‚СЏРјРё РЅР°С€РµРіРѕ СЃРµСЂРІРёСЃР° Р°СЂРµРЅРґС‹ Р°РІС‚Рѕ.</string>
+    <string name="btn_go_to_main">РџРµСЂРµР№С‚Рё РЅР° РіР»Р°РІРЅС‹Р№ СЌРєСЂР°РЅ</string>
+</resources>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\values\themes.xml ===
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.DriveNext" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary</item>
+    </style>
+
+    <!-- РѕСЃРЅРѕРІРЅР°СЏ С‚РµРјР° РїСЂРёР»РѕР¶РµРЅРёСЏ -->
+    <style name="Theme.DriveNext" parent="Base.Theme.DriveNext" />
+
+    <!-- С‚РµРјР° РґР»СЏ Splash Screen РїРѕ СЃРёСЃС‚РµРјРЅРѕРјСѓ СЃС‚Р°РЅРґР°СЂС‚Сѓ AndroidX -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon_padded</item>
+        <item name="postSplashScreenTheme">@style/Theme.DriveNext</item>
+    </style>
+</resources>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\values-night\themes.xml ===
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.DriveNext" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary</item>
+    </style>
+
+    <!-- РѕСЃРЅРѕРІРЅР°СЏ С‚РµРјР° РїСЂРёР»РѕР¶РµРЅРёСЏ -->
+    <style name="Theme.DriveNext" parent="Base.Theme.DriveNext" />
+
+    <!-- С‚РµРјР° РґР»СЏ Splash Screen РїРѕ СЃРёСЃС‚РµРјРЅРѕРјСѓ СЃС‚Р°РЅРґР°СЂС‚Сѓ AndroidX -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon_padded</item>
+        <item name="postSplashScreenTheme">@style/Theme.DriveNext</item>
+    </style>
+</resources>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\xml\backup_rules.xml ===
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older than API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+
+
+=== FILE: C:\Users\1\AndroidStudioProjects\DriveNext\app\src\main\res\xml\data_extraction_rules.xml ===
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+
+
