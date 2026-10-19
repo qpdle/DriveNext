@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tvSettingsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/settings_title"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Карточка пользователя для перехода в Профиль -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutProfileHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSettingsTitle">
+
+        <ImageView
+            android:id="@+id/ivSettingsAvatar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_avatar_placeholder"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSettingsName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Иван Иванов"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/tvSettingsEmail"
+            app:layout_constraintEnd_toStartOf="@+id/ivSettingsArrow"
+            app:layout_constraintStart_toEndOf="@id/ivSettingsAvatar"
+            app:layout_constraintTop_toTopOf="@id/ivSettingsAvatar"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tvSettingsEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="ivanov@mtuci.ru"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivSettingsAvatar"
+            app:layout_constraintEnd_toStartOf="@+id/ivSettingsArrow"
+            app:layout_constraintStart_toEndOf="@id/ivSettingsAvatar"
+            app:layout_constraintTop_toBottomOf="@id/tvSettingsName" />
+
+        <ImageView
+            android:id="@+id/ivSettingsArrow"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_chevron_right"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Список меню настроек -->
+    <LinearLayout
+        android:id="@+id/layoutSettingsMenu"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutProfileHeader">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:padding="16dp"
+            android:text="@string/settings_my_bookings"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:padding="16dp"
+            android:text="@string/settings_theme"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:padding="16dp"
+            android:text="@string/settings_notifications"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvConnectCar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:padding="16dp"
+            android:text="@string/settings_connect_car"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:padding="16dp"
+            android:text="@string/settings_help"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:padding="16dp"
+            android:text="@string/settings_invite_friend"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/bottomNavigationDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/border_card"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/tabHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/nav_home"
+                android:src="@drawable/ic_nav_home"
+                app:tint="@color/nav_inactive" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabFavorites"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/nav_favorites"
+                android:src="@drawable/ic_nav_favorites"
+                app:tint="@color/nav_inactive" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabSettings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/nav_settings"
+                android:src="@drawable/ic_nav_settings"
+                app:tint="@color/brand_primary" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
