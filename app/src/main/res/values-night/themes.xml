@@ -1,7 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Base application theme -->
     <style name="Base.Theme.DriveNext" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/brand_primary</item>
+    </style>
+
+    <!-- основная тема приложения -->
+    <style name="Theme.DriveNext" parent="Base.Theme.DriveNext" />
+
+    <!-- тема для Splash Screen по системному стандарту AndroidX -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon_padded</item>
+        <item name="postSplashScreenTheme">@style/Theme.DriveNext</item>
     </style>
 </resources>

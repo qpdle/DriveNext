@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,14 +16,63 @@
         android:theme="@style/Theme.DriveNext"
         tools:targetApi="31">
         <activity
+            android:name=".OnboardingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AuthChoiceActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".NoInternetActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignInActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpStep1Activity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpStep2Activity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpStep3Activity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SignUpSuccessActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SearchResultsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
