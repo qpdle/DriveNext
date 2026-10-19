@@ -25,8 +25,8 @@ class SignUpSuccessActivity : AppCompatActivity() {
         // обработка клика перехода на главный экран
         btnGoToMain = findViewById(R.id.btnGoToMain)
         btnGoToMain.setOnClickListener {
-            // переход в MainActivity с полной очисткой стека авторизации
-            val intent = Intent(this, MainActivity::class.java).apply {
+            // переход в HomeActivity с полной очисткой стека авторизации
+            val intent = Intent(this, HomeActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
             startActivity(intent)

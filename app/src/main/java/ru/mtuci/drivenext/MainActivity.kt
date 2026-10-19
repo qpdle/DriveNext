@@ -46,13 +46,15 @@ class MainActivity : AppCompatActivity() {
     private fun checkLaunchState() {
         val sharedPref = getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
         val isOnboardingCompleted = sharedPref.getBoolean("is_onboarding_completed", false)
+        val isLoggedIn = sharedPref.getBoolean("is_logged_in", false)
 
         if (!isOnboardingCompleted) {
-            // Если первый запуск — открываем онбординг
             val intent = Intent(this, OnboardingActivity::class.java)
             startActivity(intent)
+        } else if (isLoggedIn) {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
         } else {
-            // Если онбординг уже пройден — сразу открываем выбор действия (Вход/Регистрация)
             val intent = Intent(this, AuthChoiceActivity::class.java)
             startActivity(intent)
         }

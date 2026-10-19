@@ -127,7 +127,7 @@ class SignInActivity : AppCompatActivity() {
         Toast.makeText(this, "Успешный вход!", Toast.LENGTH_SHORT).show()
 
         // переход на экран приложения с очисткой стека авторизации
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, HomeActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         startActivity(intent)
