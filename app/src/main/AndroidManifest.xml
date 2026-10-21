@@ -73,6 +73,10 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".CarDetailsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

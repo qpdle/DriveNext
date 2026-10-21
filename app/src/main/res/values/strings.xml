@@ -118,4 +118,11 @@
 
     <string name="profile_email_label">Электронная почта\nivanov@mtuci.ru</string>
     <string name="profile_gender_label">Пол\nМужской</string>
+
+    <!-- Экран Детали -->
+    <string name="details_title">Детали</string>
+    <string name="details_location_label">Адрес нахождения</string>
+    <string name="details_description_label">Описание</string>
+    <string name="msg_added_to_favorites">Добавлено в избранное</string>
+    <string name="msg_removed_from_favorites">Удалено из избранного</string>
 </resources>

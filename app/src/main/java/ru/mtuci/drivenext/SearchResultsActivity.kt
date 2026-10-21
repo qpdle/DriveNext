@@ -94,7 +94,10 @@ class SearchResultsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Бронирование: ${car.brand} ${car.model}", Toast.LENGTH_SHORT).show()
             },
             onDetailsClick = { car ->
-                Toast.makeText(this, "Детали: ${car.brand} ${car.model}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, CarDetailsActivity::class.java).apply {
+                    putExtra("extra_car", car)
+                }
+                startActivity(intent)
             }
         )
         rvResults.layoutManager = LinearLayoutManager(this)
