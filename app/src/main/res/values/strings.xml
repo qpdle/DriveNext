@@ -125,4 +125,21 @@
     <string name="details_description_label">Описание</string>
     <string name="msg_added_to_favorites">Добавлено в избранное</string>
     <string name="msg_removed_from_favorites">Удалено из избранного</string>
+
+    <!-- Экран Оформление аренды -->
+    <string name="checkout_title">Оформление аренды</string>
+    <string name="checkout_start_date_label">Начало аренды:</string>
+    <string name="checkout_end_date_label">Конец аренды:</string>
+    <string name="checkout_rent_format">Аренда автомобиля ×%1$d дн.:</string>
+    <string name="checkout_insurance_format">Страховка ×%1$d дн.:</string>
+    <string name="checkout_total_label">Итого</string>
+    <string name="checkout_deposit_label">Возвращаемый депозит</string>
+    <string name="checkout_btn_continue">Продолжить</string>
+    <string name="price_simple_rub_format">%1$s ₽</string>
+
+    <!-- Экран Удачной поездки -->
+    <string name="booking_success_title">Удачной поездки</string>
+    <string name="booking_success_subtitle">Бронирование успешно создано</string>
+    <string name="booking_success_btn_my_bookings">Перейти к своим бронированиям</string>
+    <string name="booking_success_btn_home">Домой</string>
 </resources>

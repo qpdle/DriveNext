@@ -91,7 +91,10 @@ class SearchResultsActivity : AppCompatActivity() {
         carAdapter = CarAdapter(
             cars = emptyList(),
             onBookClick = { car ->
-                Toast.makeText(this, "Бронирование: ${car.brand} ${car.model}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, BookingCheckoutActivity::class.java).apply {
+                    putExtra("extra_car", car)
+                }
+                startActivity(intent)
             },
             onDetailsClick = { car ->
                 val intent = Intent(this, CarDetailsActivity::class.java).apply {

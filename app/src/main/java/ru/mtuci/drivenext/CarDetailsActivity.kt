@@ -123,7 +123,10 @@ class CarDetailsActivity : AppCompatActivity() {
         }
 
         btnBook.setOnClickListener {
-            Toast.makeText(this, "Переход к бронированию: ${currentCar.brand} ${currentCar.model}", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, BookingCheckoutActivity::class.java).apply {
+                putExtra("extra_car", currentCar)
+            }
+            startActivity(intent)
         }
     }
 }
