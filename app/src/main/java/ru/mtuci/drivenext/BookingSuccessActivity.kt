@@ -16,12 +16,9 @@ class BookingSuccessActivity : AppCompatActivity() {
         val btnToMyBookings: Button = findViewById(R.id.btnToMyBookings)
         val btnBackHome: AppCompatButton = findViewById(R.id.btnBackHome)
 
-        // Переход на экран списка бронирований (реализуется на Шаге 4)
+        // Переход на экран списка бронирований
         btnToMyBookings.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                putExtra("open_my_bookings", true)
-            }
+            val intent = Intent(this, MyBookingsActivity::class.java)
             startActivity(intent)
             finish()
         }

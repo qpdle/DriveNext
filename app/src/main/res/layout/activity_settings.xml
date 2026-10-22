@@ -93,6 +93,7 @@
         app:layout_constraintTop_toBottomOf="@id/layoutProfileHeader">
 
         <TextView
+            android:id="@+id/tvMyBookingsItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableEnd="@drawable/ic_chevron_right"

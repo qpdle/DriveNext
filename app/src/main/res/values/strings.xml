@@ -142,4 +142,17 @@
     <string name="booking_success_subtitle">Бронирование успешно создано</string>
     <string name="booking_success_btn_my_bookings">Перейти к своим бронированиям</string>
     <string name="booking_success_btn_home">Домой</string>
+
+    <!-- Экраны Мои бронирования и Детали бронирования -->
+    <string name="my_bookings_title">Мои бронирования</string>
+    <string name="booking_number_prefix_format">Бронирование # %1$s</string>
+    <string name="booking_active_prefix">Начало аренды: %1$s</string>
+    <string name="booking_completed_prefix">Аренда завершена: %1$s</string>
+    <string name="booking_driver_name_label">ФИО водителя</string>
+    <string name="booking_driver_license_label">Номер ВУ</string>
+    <string name="booking_status_label">Статус аренды</string>
+    <string name="booking_total_sum_label">Общая сумма</string>
+    <string name="booking_btn_cancel">Отменить бронирование</string>
+    <string name="booking_canceled_toast">Бронирование успешно отменено</string>
+    <string name="booking_empty_list_message">У вас пока нет активных бронирований</string>
 </resources>

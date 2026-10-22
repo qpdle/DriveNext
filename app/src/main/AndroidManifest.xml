@@ -85,6 +85,14 @@
         <activity
             android:name=".BookingSuccessActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BookingDetailsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
