@@ -73,6 +73,30 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".CarDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BookingCheckoutActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BookingSuccessActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BookingDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".FavoritesActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -81,10 +81,16 @@ class HomeActivity : AppCompatActivity() {
         carAdapter = CarAdapter(
             cars = availableCars,
             onBookClick = { car ->
-                Toast.makeText(this, "Бронирование: ${car.brand} ${car.model}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, BookingCheckoutActivity::class.java).apply {
+                    putExtra("extra_car", car)
+                }
+                startActivity(intent)
             },
             onDetailsClick = { car ->
-                Toast.makeText(this, "Детали: ${car.brand} ${car.model}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, CarDetailsActivity::class.java).apply {
+                    putExtra("extra_car", car)
+                }
+                startActivity(intent)
             }
         )
         rvCarsList.layoutManager = LinearLayoutManager(this)
@@ -116,7 +122,11 @@ class HomeActivity : AppCompatActivity() {
         }
 
         tabFavorites.setOnClickListener {
-            Toast.makeText(this, "Раздел «Избранное» будет доступен в следующем обновлении", Toast.LENGTH_SHORT).show()
+            val tabFavorites = findViewById<LinearLayout>(R.id.tabFavorites)
+            tabFavorites.setOnClickListener {
+                val intent = Intent(this, FavoritesActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         tabSettings.setOnClickListener {

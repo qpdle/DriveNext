@@ -118,4 +118,45 @@
 
     <string name="profile_email_label">Электронная почта\nivanov@mtuci.ru</string>
     <string name="profile_gender_label">Пол\nМужской</string>
+
+    <!-- Экран Детали -->
+    <string name="details_title">Детали</string>
+    <string name="details_location_label">Адрес нахождения</string>
+    <string name="details_description_label">Описание</string>
+    <string name="msg_added_to_favorites">Добавлено в избранное</string>
+    <string name="msg_removed_from_favorites">Удалено из избранного</string>
+
+    <!-- Экран Оформление аренды -->
+    <string name="checkout_title">Оформление аренды</string>
+    <string name="checkout_start_date_label">Начало аренды:</string>
+    <string name="checkout_end_date_label">Конец аренды:</string>
+    <string name="checkout_rent_format">Аренда автомобиля ×%1$d дн.:</string>
+    <string name="checkout_insurance_format">Страховка ×%1$d дн.:</string>
+    <string name="checkout_total_label">Итого</string>
+    <string name="checkout_deposit_label">Возвращаемый депозит</string>
+    <string name="checkout_btn_continue">Продолжить</string>
+    <string name="price_simple_rub_format">%1$s ₽</string>
+
+    <!-- Экран Удачной поездки -->
+    <string name="booking_success_title">Удачной поездки</string>
+    <string name="booking_success_subtitle">Бронирование успешно создано</string>
+    <string name="booking_success_btn_my_bookings">Перейти к своим бронированиям</string>
+    <string name="booking_success_btn_home">Домой</string>
+
+    <!-- Экраны Мои бронирования и Детали бронирования -->
+    <string name="my_bookings_title">Мои бронирования</string>
+    <string name="booking_number_prefix_format">Бронирование # %1$s</string>
+    <string name="booking_active_prefix">Начало аренды: %1$s</string>
+    <string name="booking_completed_prefix">Аренда завершена: %1$s</string>
+    <string name="booking_driver_name_label">ФИО водителя</string>
+    <string name="booking_driver_license_label">Номер ВУ</string>
+    <string name="booking_status_label">Статус аренды</string>
+    <string name="booking_total_sum_label">Общая сумма</string>
+    <string name="booking_btn_cancel">Отменить бронирование</string>
+    <string name="booking_canceled_toast">Бронирование успешно отменено</string>
+    <string name="booking_empty_list_message">У вас пока нет активных бронирований</string>
+
+    <!-- Экран Избранное -->
+    <string name="favorites_title">Избранное</string>
+    <string name="favorites_empty_message">В избранном пока ничего нет</string>
 </resources>
