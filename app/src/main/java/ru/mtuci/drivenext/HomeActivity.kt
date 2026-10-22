@@ -122,7 +122,11 @@ class HomeActivity : AppCompatActivity() {
         }
 
         tabFavorites.setOnClickListener {
-            Toast.makeText(this, "Раздел «Избранное» будет доступен в следующем обновлении", Toast.LENGTH_SHORT).show()
+            val tabFavorites = findViewById<LinearLayout>(R.id.tabFavorites)
+            tabFavorites.setOnClickListener {
+                val intent = Intent(this, FavoritesActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         tabSettings.setOnClickListener {

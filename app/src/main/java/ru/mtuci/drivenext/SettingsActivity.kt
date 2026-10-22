@@ -33,5 +33,13 @@ class SettingsActivity : AppCompatActivity() {
         tabHome.setOnClickListener {
             finish()
         }
+
+        // Обработчик нажатия на кнопку избранное
+        val tabFavorites = findViewById<LinearLayout>(R.id.tabFavorites)
+        tabFavorites?.setOnClickListener {
+            val intent = Intent(this, FavoritesActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }

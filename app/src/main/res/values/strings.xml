@@ -155,4 +155,8 @@
     <string name="booking_btn_cancel">Отменить бронирование</string>
     <string name="booking_canceled_toast">Бронирование успешно отменено</string>
     <string name="booking_empty_list_message">У вас пока нет активных бронирований</string>
+
+    <!-- Экран Избранное -->
+    <string name="favorites_title">Избранное</string>
+    <string name="favorites_empty_message">В избранном пока ничего нет</string>
 </resources>
